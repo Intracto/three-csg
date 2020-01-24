@@ -173,6 +173,25 @@ export class CSG {
         return CSG.fromPolygons(a.allPolygons());
     }
 
+    subtractMultiple(csgMeshes) {
+        var a = new Node(this.clone().polygons),
+            b;
+
+        a.invert();
+        for(var i = 0; i < csgMeshes.length; i++) {
+            b = new Node(csgMeshes[i].clone().polygons);
+            a.clipTo(b);
+            b.clipTo(a);
+            b.invert();
+            b.clipTo(a);
+            b.invert();
+            a.build(b.allPolygons());
+        }
+        a.invert();
+
+        return CSG.fromPolygons(a.allPolygons());
+    }
+
     intersect(csg: CSG) {
         const a = new Node(this.clone().polygons);
         const b = new Node(csg.clone().polygons);
